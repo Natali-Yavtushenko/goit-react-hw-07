@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSelector, createSlice } from "@reduxjs/toolkit";
 import { addContact, deleteContact, fetchContacts } from "./contactsOps";
 
 const handlePending = (state) => {
@@ -12,32 +12,33 @@ const handleRejected = (state, action) => {
 
 const initialState = {
   items: [],
-  isloading: false,
+  filter: "",
+  isLoading: false,
   error: null,
 };
 
 const contactsSlice = createSlice({
   name: "contacts",
   initialState,
+  reducers: {
+    setFilter: (state, action) => {
+      state.filter = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchContacts.pending, handlePending)
       .addCase(fetchContacts.fulfilled, (state, action) => {
-        state.items = action.payload.map((contact) => ({
-          ...contact,
-        }));
+        state.items = action.payload;
         state.isLoading = false;
         state.error = null;
-        state.items = action.payload;
       })
       .addCase(fetchContacts.rejected, handleRejected)
       .addCase(addContact.pending, handlePending)
       .addCase(addContact.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        state.items.push({
-          ...action.payload,
-        });
+        state.items.push(action.payload);
       })
       .addCase(addContact.rejected, handleRejected)
       .addCase(deleteContact.pending, handlePending)
@@ -52,6 +53,21 @@ const contactsSlice = createSlice({
   },
 });
 
-export const selectContact = (state) => state.contacts.items;
+export const selectLoading = (state) => state.contacts.isLoading;
+export const selectError = (state) => state.contacts.error;
+
+export const { setFilter } = contactsSlice.actions;
+
+export const selectContacts = (state) => state.contacts.items;
+export const selectFilter = (state) => state.contacts.filter;
+
+export const selectFilteredContacts = createSelector(
+  [selectContacts, selectFilter],
+  (contacts, filter) => {
+    return contacts.filter((contact) =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  }
+);
 
 export default contactsSlice.reducer;

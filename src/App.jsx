@@ -4,11 +4,12 @@ import SearchBox from "./components/SearchBox/SearchBox";
 import ContactForm from "./components/ContactForm/ContactForm";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchContacts } from "./redux/contactsOps";
+import { selectError, selectLoading } from "./redux/contactsSlice";
 
 export default function App() {
   const dispatch = useDispatch();
-  const isLoading = useSelector((state) => state.contacts.isLoading);
-  const error = useSelector((state) => state.contacts.error);
+  const isLoading = useSelector(selectLoading);
+  const error = useSelector(selectError);
 
   useEffect(() => {
     dispatch(fetchContacts());

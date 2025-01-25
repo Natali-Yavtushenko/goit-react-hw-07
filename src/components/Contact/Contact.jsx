@@ -4,9 +4,9 @@ import { FaUser, FaPhone } from "react-icons/fa";
 import s from "../ContactList/List.module.css";
 import { deleteContact } from "../../redux/contactsOps";
 
-const Contact = ({ contact, name, number }) => {
+const Contact = ({ id, name, number }) => {
   const dispatch = useDispatch();
-  const handleDelete = () => dispatch(deleteContact(contact.id));
+  const handleDelete = () => dispatch(deleteContact(id));
 
   return (
     <div className={s.containerItem}>
